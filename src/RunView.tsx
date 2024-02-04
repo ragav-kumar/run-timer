@@ -4,6 +4,8 @@ import { SessionConfiguration } from './session.ts';
 import { ProgressBar } from './components/ProgressBar.tsx';
 import styles from './RunView.module.scss';
 import whistle from './assets/whistle2.mp3';
+import { RunTimeDisplay } from './components/RunTimeDisplay.tsx';
+import { SegmentTimeDisplay } from './components/SegmentTimeDisplay.tsx';
 
 export const RunView = () => {
     const [ startTime, setStartTime ] = useState<Date>(new Date());
@@ -16,7 +18,7 @@ export const RunView = () => {
     const audioRef = useRef(new Audio(whistle));
 
     const playSfx = () => {
-        if ( !isRunning || !audioRef.current ) {
+        if ( (!isRunning && elapsedTime / 1000 < totalTime) || !audioRef.current ) {
             return;
         }
         audioRef.current.play().catch(console.error);
@@ -69,9 +71,8 @@ export const RunView = () => {
 
     return (
         <div className={styles.wrap}>
-            <div className={styles.time}>
-                <span>{toTimeString(elapsedTime / 1000)}</span> / {toTimeString(totalTime)}
-            </div>
+            <SegmentTimeDisplay time={elapsedTime / 1000} segmentType='run' />
+            <RunTimeDisplay elapsedTime={elapsedTime / 1000} totalTime={totalTime}/>
             <ProgressBar
                 currentTime={elapsedTime / 1000}
                 totalTime={totalTime}
@@ -90,15 +91,3 @@ const computeTotalTime = ( { warmUp, cycles, runPeriod, walkPeriod, coolDown }: 
     ( cycles * runPeriod ) +
     ( Math.max(cycles - 1) * walkPeriod )
 );
-
-const toTimeString = ( durationSeconds: number ): string => {
-    const hours = Math.floor(durationSeconds / 3600);
-    const minutes = Math.floor(( durationSeconds % 3600 ) / 60).toString().padStart(2, '0');
-    const seconds = Math.floor(durationSeconds % 60).toString().padStart(2, '0');
-
-    if ( hours > 0 ) {
-        return `${hours}:${minutes}:${seconds}`;
-    } else {
-        return `${minutes}:${seconds}`;
-    }
-};

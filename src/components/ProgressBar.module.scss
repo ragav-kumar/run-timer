@@ -10,24 +10,10 @@
     opacity: .5;
 }
 
-.active {
+.activeSegment {
+    composes: segment;
     opacity: 1;
     border-width: 2px;
-}
-
-.bookEnd {
-    composes: segment;
-    background-color: lawngreen;
-}
-
-.run {
-    composes: segment;
-    background-color: red;
-}
-
-.walk {
-    composes: segment;
-    background-color: deepskyblue;
 }
 
 .marker {

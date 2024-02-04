@@ -1,10 +1,13 @@
 import { useSessionContext } from './SessionContext';
-import { SessionConfiguration } from '../session.ts';
-import { useEffect, useMemo } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import styles from './ProgressBar.module.scss';
-import { ProgressBarSegment, SegmentType } from './ProgressBarSegment.tsx';
+import { ProgressBarSegment } from './ProgressBarSegment.tsx';
+import { SegmentType } from './utilities.ts';
 
-const progressBarWidth = 1000 as const;
+interface Segment {
+    segmentType: SegmentType;
+    width: number;
+}
 
 interface ProgressBarProps {
     currentTime: number;
@@ -13,6 +16,7 @@ interface ProgressBarProps {
 }
 
 export const ProgressBar = ( { currentTime, totalTime, onTransition }: ProgressBarProps ) => {
+    const [ progressBarWidth, setProgressBarWidth ] = useState<number>(document.body.offsetWidth * .8);
     const { session } = useSessionContext();
     const { warmUp, cycles, runPeriod, walkPeriod, coolDown } = session;
 
@@ -24,14 +28,16 @@ export const ProgressBar = ( { currentTime, totalTime, onTransition }: ProgressB
             return 'coolDown';
         }
         const cycleTime = runPeriod + walkPeriod;
-        const currentCycle = Math.floor(Math.floor( currentTime - warmUp ) / cycleTime);
-        console.log({ currentTime, warmUp, cycleTime, currentCycle });
+        const currentCycle = Math.floor(Math.floor(currentTime - warmUp) / cycleTime);
+
         const cycleRunStartTime = warmUp + currentCycle * cycleTime;
         const cycleWalkStartTime = cycleRunStartTime + runPeriod;
         return 2 * currentCycle + ( currentTime > cycleWalkStartTime ? 1 : 0 );
     };
 
-    const segmentWidth = ( segmentTime: number ): number => ( segmentTime / totalTime ) * progressBarWidth;
+    const segmentWidth = useCallback(( segmentTime: number ): number => {
+        return ( segmentTime / totalTime ) * progressBarWidth;
+    }, [ progressBarWidth, totalTime ]);
 
     const segmentDefs = useMemo(() => {
         if ( cycles <= 0 || ( runPeriod <= 0 && walkPeriod <= 0 ) ) {
@@ -55,15 +61,36 @@ export const ProgressBar = ( { currentTime, totalTime, onTransition }: ProgressB
         }
 
         return segments;
-    }, [ cycles, runPeriod, totalTime, walkPeriod ]);
+    }, [ cycles, runPeriod, segmentWidth, walkPeriod ]);
 
     const percentProgress = 100 * Math.min(currentTime, totalTime) / totalTime;
     const currentSegment = getCurrentSegment();
 
     useEffect(() => {
-        onTransition();
+        if ( percentProgress > 0 ) {
+            onTransition();
+        }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [ currentSegment ]);
+
+    useEffect(() => {
+        if ( percentProgress >= 100 ) {
+            onTransition();
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [ percentProgress ]);
+
+    useEffect(() => {
+        const resize = () => {
+            setProgressBarWidth(document.body.offsetWidth * .8);
+        };
+
+        window.addEventListener('resize', resize);
+
+        return () => {
+            window.removeEventListener('resize', resize);
+        };
+    }, []);
 
     return (
         <div className={styles.wrap}>
@@ -96,21 +123,3 @@ export const ProgressBar = ( { currentTime, totalTime, onTransition }: ProgressB
         </div>
     );
 };
-
-const countActiveSegments = ( { cycles, runPeriod, walkPeriod }: SessionConfiguration ): number => {
-    let segments: number = 0;
-
-    if ( runPeriod > 0 ) {
-        segments += cycles;
-    }
-    if ( walkPeriod > 0 ) {
-        segments += cycles;
-    }
-
-    return segments;
-};
-
-interface Segment {
-    segmentType: SegmentType;
-    width: number;
-}
