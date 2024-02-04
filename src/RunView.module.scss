@@ -1,0 +1,13 @@
+.wrap {
+    display: flex;
+    flex-direction: column;
+    row-gap: 2rem;
+}
+
+.time {
+    font-size: 3rem;
+    font-weight: lighter;
+    > span {
+        font-weight: bold;
+    }
+}

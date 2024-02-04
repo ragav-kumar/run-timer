@@ -1,0 +1,58 @@
+.wrap {
+    display: flex;
+    border: 1px solid white;
+    position: relative;
+}
+
+.segment {
+    height: 5rem;
+    border: 1px solid black;
+    opacity: .5;
+}
+
+.active {
+    opacity: 1;
+    border-width: 2px;
+}
+
+.bookEnd {
+    composes: segment;
+    background-color: lawngreen;
+}
+
+.run {
+    composes: segment;
+    background-color: red;
+}
+
+.walk {
+    composes: segment;
+    background-color: deepskyblue;
+}
+
+.marker {
+    position: absolute;
+    height: 100%;
+}
+
+.markerLine {
+    transform: translateX(-50%);
+    height: 100%;
+    width: .4rem;
+    background-color: white;
+    border: 1px solid black;
+    border-bottom: none;
+}
+
+.markerTriangle {
+    position: absolute;
+    top: 100%;
+    transform: translateX(-50%);
+
+    background-color: white;
+    height: 1rem;
+    width: 2rem;
+    clip-path: polygon(45% 0, 55% 0, 100% 100%, 0 100%);
+    border: 1px solid black;
+    border-top: none;
+}
