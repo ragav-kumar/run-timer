@@ -1,24 +1,23 @@
 import styles from './RunTimeDisplay.module.scss';
 import { toTimeString } from './utilities.ts';
+import { useSessionContext } from './SessionContext';
 
-interface RunTimeDisplayProps {
-    elapsedTime: number;
-    totalTime: number;
-}
-
-export const RunTimeDisplay = ( { elapsedTime, totalTime }: RunTimeDisplayProps ) => (
-    <div className={styles.wrap}>
-        <div className={styles.boldTime}>
-            -{toTimeString(Math.abs(totalTime - elapsedTime))}
+export const RunTimeDisplay = () => {
+    const { currentRun: { elapsedTime, totalTime } } = useSessionContext();
+    return (
+        <div className={styles.wrap}>
+            <div className={styles.boldTime}>
+                -{toTimeString(Math.abs(totalTime - elapsedTime) / 1000)}
+            </div>
+            <div>
+                <span className={styles.boldTime}>
+                    {toTimeString(elapsedTime / 1000)}
+                </span>
+                /
+                <span className={styles.lightTime}>
+                    {toTimeString(totalTime / 1000)}
+                </span>
+            </div>
         </div>
-        <div>
-            <span className={styles.boldTime}>
-                {toTimeString(elapsedTime)}
-            </span>
-            /
-            <span className={styles.lightTime}>
-                {toTimeString(totalTime)}
-            </span>
-        </div>
-    </div>
-);
+    );
+};

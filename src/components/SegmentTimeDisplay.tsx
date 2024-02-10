@@ -1,15 +1,18 @@
-import { segmentColours, SegmentType, toTimeString } from './utilities';
+import { segmentColours, toTimeString } from './utilities';
 import styles from './SegmentTimeDisplay.module.scss';
+import { useSessionContext } from './SessionContext';
 
-interface SegmentTimeDisplayProps {
-    time: number;
-    segmentType: SegmentType;
-}
+export const SegmentTimeDisplay = () => {
+    const { currentRun } = useSessionContext();
 
-export const SegmentTimeDisplay = ( { segmentType, time }: SegmentTimeDisplayProps ) => (
-    <div className={styles.wrap}>
-        <div style={{ backgroundColor: segmentColours[segmentType] }}>
-            {toTimeString(time)}
+    const sessionTime = new Date().getTime() - currentRun.currentSegment.startTime;
+    const timeLeft = currentRun.currentSegment.duration - sessionTime;
+
+    return currentRun.isRunning ? (
+        <div className={styles.wrap}>
+            <div style={{ backgroundColor: segmentColours[currentRun.currentSegment.type] }}>
+                {toTimeString(timeLeft / 1000)}
+            </div>
         </div>
-    </div>
-);
+    ) : null;
+};

@@ -1,9 +1,12 @@
 import { createContext } from 'react';
-import { SessionConfiguration } from '../../session.ts';
+import { CurrentRun, SessionConfiguration } from '../../session.ts';
 
 interface SessionContextType {
     session: SessionConfiguration;
-    update: (session: SessionConfiguration) => void;
+    currentRun: CurrentRun;
+    updateSession: ( session: SessionConfiguration ) => void;
+    updateRun: ( run?: Partial<CurrentRun> ) => void;
+    resetRun: ( isRunning: boolean ) => void;
 }
 
 export const SessionContext = createContext<SessionContextType | undefined>(undefined);

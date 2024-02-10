@@ -10,30 +10,14 @@ interface Segment {
 }
 
 interface ProgressBarProps {
-    currentTime: number;
-    totalTime: number;
     onTransition: () => void;
 }
 
-export const ProgressBar = ( { currentTime, totalTime, onTransition }: ProgressBarProps ) => {
+export const ProgressBar = ( { onTransition }: ProgressBarProps ) => {
     const [ progressBarWidth, setProgressBarWidth ] = useState<number>(document.body.offsetWidth * .8);
-    const { session } = useSessionContext();
+    const { session, currentRun } = useSessionContext();
     const { warmUp, cycles, runPeriod, walkPeriod, coolDown } = session;
-
-    const getCurrentSegment = (): number | 'warmUp' | 'coolDown' => {
-        if ( currentTime < warmUp ) {
-            return 'warmUp';
-        }
-        if ( currentTime >= totalTime - coolDown ) {
-            return 'coolDown';
-        }
-        const cycleTime = runPeriod + walkPeriod;
-        const currentCycle = Math.floor(Math.floor(currentTime - warmUp) / cycleTime);
-
-        const cycleRunStartTime = warmUp + currentCycle * cycleTime;
-        const cycleWalkStartTime = cycleRunStartTime + runPeriod;
-        return 2 * currentCycle + ( currentTime > cycleWalkStartTime ? 1 : 0 );
-    };
+    const { elapsedTime, totalTime } = currentRun;
 
     const segmentWidth = useCallback(( segmentTime: number ): number => {
         return ( segmentTime / totalTime ) * progressBarWidth;
@@ -49,13 +33,13 @@ export const ProgressBar = ( { currentTime, totalTime, onTransition }: ProgressB
             const period = runPeriod <= 0 ? walkPeriod : runPeriod;
             const periodType = runPeriod <= 0 ? 'walk' : 'run';
             for ( let i = 0; i < cycles; i++ ) {
-                segments.push({ segmentType: periodType, width: segmentWidth(period) });
+                segments.push({ segmentType: periodType, width: segmentWidth(period * 1000) });
             }
         } else {
             for ( let i = 0; i < cycles; i++ ) {
-                segments.push({ segmentType: 'run', width: segmentWidth(runPeriod) });
+                segments.push({ segmentType: 'run', width: segmentWidth(runPeriod * 1000) });
                 if ( i < ( cycles - 1 ) ) {
-                    segments.push({ segmentType: 'walk', width: segmentWidth(walkPeriod) });
+                    segments.push({ segmentType: 'walk', width: segmentWidth(walkPeriod * 1000) });
                 }
             }
         }
@@ -63,15 +47,14 @@ export const ProgressBar = ( { currentTime, totalTime, onTransition }: ProgressB
         return segments;
     }, [ cycles, runPeriod, segmentWidth, walkPeriod ]);
 
-    const percentProgress = 100 * Math.min(currentTime, totalTime) / totalTime;
-    const currentSegment = getCurrentSegment();
+    const percentProgress = 100 * Math.min(elapsedTime, totalTime) / totalTime;
 
     useEffect(() => {
         if ( percentProgress > 0 ) {
             onTransition();
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [ currentSegment ]);
+    }, [ currentRun.currentSegment.position ]);
 
     useEffect(() => {
         if ( percentProgress >= 100 ) {
@@ -97,8 +80,8 @@ export const ProgressBar = ( { currentTime, totalTime, onTransition }: ProgressB
             {warmUp > 0 ? (
                 <ProgressBarSegment
                     segmentType='bookEnd'
-                    width={segmentWidth(warmUp)}
-                    isActiveSegment={currentSegment === 'warmUp'}
+                    width={segmentWidth(warmUp * 1000)}
+                    isActiveSegment={currentRun.currentSegment.position === 'warmUp'}
                 />
             ) : null}
             {segmentDefs.map(( { segmentType, width }, index ) => (
@@ -106,14 +89,14 @@ export const ProgressBar = ( { currentTime, totalTime, onTransition }: ProgressB
                     key={index}
                     segmentType={segmentType}
                     width={width}
-                    isActiveSegment={currentSegment === index}
+                    isActiveSegment={currentRun.currentSegment.position === index}
                 />
             ))}
             {coolDown > 0 ? (
                 <ProgressBarSegment
                     segmentType='bookEnd'
-                    width={segmentWidth(coolDown)}
-                    isActiveSegment={currentSegment === 'coolDown'}
+                    width={segmentWidth(coolDown * 1000)}
+                    isActiveSegment={currentRun.currentSegment.position === 'coolDown'}
                 />
             ) : null}
             <div className={styles.marker} style={{ left: `${percentProgress}%` }}>

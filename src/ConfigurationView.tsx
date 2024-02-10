@@ -6,10 +6,10 @@ import styles from './ConfigurationView.module.scss';
 import { useSessionContext } from './components/SessionContext';
 
 export const ConfigurationView = () => {
-    const { session, update } = useSessionContext();
+    const { session, updateSession } = useSessionContext();
 
     return (
-        <Form data={session} onSubmit={update} className={styles.form}>
+        <Form data={session} onSubmit={updateSession} className={styles.form}>
             <NumberField<SessionConfiguration> field='warmUp'>Warm up</NumberField>
             <NumberField<SessionConfiguration> field='coolDown'>Cool down</NumberField>
             <NumberField<SessionConfiguration> field='runPeriod'>Run period</NumberField>

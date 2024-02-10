@@ -1,3 +1,5 @@
+import { SegmentType } from './components/utilities.ts';
+
 export interface SessionConfiguration {
     /** Duration before cycles begin, in seconds */
     warmUp: number;
@@ -9,6 +11,19 @@ export interface SessionConfiguration {
     walkPeriod: number;
     /** Number of run/walk cycles */
     cycles: number;
+}
+
+export interface CurrentRun {
+    elapsedTime: number;
+    totalTime: number;
+    startTime: number;
+    isRunning: boolean;
+    currentSegment: {
+        position: number | 'warmUp' | 'coolDown';
+        type: SegmentType;
+        startTime: number;
+        duration: number;
+    };
 }
 
 const localStorageKey = 'session_config' as const;
