@@ -11,3 +11,11 @@
         font-weight: bold;
     }
 }
+
+.clock {
+    font-size: 3rem;
+    position: fixed;
+    bottom: 2rem;
+    left: 50%;
+    transform: translateX(-50%);
+}

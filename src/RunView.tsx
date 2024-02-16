@@ -54,6 +54,7 @@ export const RunView = () => {
         }
     }, []);
 
+    const now = new Date();
     return (
         <div className={styles.wrap}>
             <SegmentTimeDisplay />
@@ -62,6 +63,9 @@ export const RunView = () => {
             <button onClick={toggleTimer}>
                 {currentRun.isRunning ? 'Stop' : 'Start'}
             </button>
+            <div className={styles.clock}>
+                {now.getHours() % 12}:{now.getMinutes().toString().padStart(2, '0')} {now.getHours() < 13 ? 'AM' : 'PM'}
+            </div>
         </div>
     );
 };

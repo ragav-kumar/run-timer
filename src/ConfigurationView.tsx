@@ -10,14 +10,28 @@ export const ConfigurationView = () => {
 
     return (
         <Form data={session} onSubmit={updateSession} className={styles.form}>
-            <NumberField<SessionConfiguration> field='warmUp'>Warm up</NumberField>
-            <NumberField<SessionConfiguration> field='coolDown'>Cool down</NumberField>
-            <NumberField<SessionConfiguration> field='runPeriod'>Run period</NumberField>
-            <NumberField<SessionConfiguration> field='walkPeriod'>Walk period</NumberField>
-            <NumberField<SessionConfiguration> field='cycles'># of Cycles</NumberField>
+            <NumberField<SessionConfiguration> field='warmUp'>
+                Warm up
+            </NumberField>
+            <NumberField<SessionConfiguration> field='coolDown'>
+                Cool down
+            </NumberField>
+            <NumberField<SessionConfiguration> field='runPeriod'>
+                Run period
+            </NumberField>
+            <NumberField<SessionConfiguration> field='walkPeriod'>
+                Walk period
+            </NumberField>
+            <NumberField<SessionConfiguration> field='cycles'>
+                # of Cycles
+            </NumberField>
             <div />
-            <Button variant='submit'>Save</Button>
-            <Button variant='reset'>Reset</Button>
+            <Button variant='submit'>
+                Save
+            </Button>
+            <Button variant='reset'>
+                Reset
+            </Button>
         </Form>
     );
 };
