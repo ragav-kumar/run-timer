@@ -14,6 +14,12 @@ export type SegmentType = 'bookEnd' | 'run' | 'walk';
 
 export const segmentColours: Readonly<Record<SegmentType, string>> = {
     run: '#ff0000',
-    bookEnd: '#7cfc00',
+    bookEnd: '#00fc47',
     walk: '#00bfff',
+};
+
+export const segmentTextColours: Readonly<Record<SegmentType, string>> = {
+    run: '#ffffff',
+    bookEnd: '#000000',
+    walk: '#ffffff',
 };

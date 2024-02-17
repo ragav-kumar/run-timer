@@ -1,4 +1,4 @@
-import { segmentColours, toTimeString } from './utilities';
+import { segmentColours, segmentTextColours, toTimeString } from './utilities';
 import styles from './SegmentTimeDisplay.module.scss';
 import { useSessionContext } from './SessionContext';
 
@@ -10,7 +10,12 @@ export const SegmentTimeDisplay = () => {
 
     return currentRun.isRunning ? (
         <div className={styles.wrap}>
-            <div style={{ backgroundColor: segmentColours[currentRun.currentSegment.type] }}>
+            <div
+                style={{
+                    backgroundColor: segmentColours[currentRun.currentSegment.type],
+                    color: segmentTextColours[currentRun.currentSegment.type],
+                }}
+            >
                 {toTimeString(timeLeft / 1000)}
             </div>
         </div>
